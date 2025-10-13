@@ -1,0 +1,20 @@
+print("\n=== Part 2: Random Numbers Test ===")
+
+arr = [random.randint(1, 100) for _ in range(20)]
+target = random.choice(arr) if random.random() < 0.5 else 999  # 50% chance of failure
+arr.sort()
+
+print("Sorted Array:", arr)
+print("Target:", target)
+
+# Run each search
+index = recursive_binary_search(arr, target, 0, len(arr) - 1)
+print(f"Recursive Binary Search → {target} {'found at index ' + str(index) if index != -1 else 'not found'}")
+
+index = iterative_binary_search(arr, target)
+print(f"Iterative Binary Search → {target} {'found at index ' + str(index) if index != -1 else 'not found'}")
+
+index = sequential_search(arr, target)
+print(f"Sequential Search → {target} {'found at index ' + str(index) if index != -1 else 'not found'}")
+
+print("\n(Note: Binary search requires sorted data; sequential search does not.)")
