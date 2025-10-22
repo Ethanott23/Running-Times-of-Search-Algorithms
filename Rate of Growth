@@ -1,34 +1,25 @@
-from search_algorithms import recursive_binary_search, iterative_binary_search, sequential_search
-import random
 import time
+import random
+from search_algorithms import recursive_binary_search, iterative_binary_search, sequential_search
 
-print("\n=== Part 3: Rate of Growth Test ===")
+def measure_time(search_fn, arr, target, *args):
+    start = time.perf_counter()
+    search_fn(arr, target, *args) if args else search_fn(arr, target)
+    end = time.perf_counter()
+    return (end - start) * 1_000_000  # convert to microseconds
 
-dataSize = [5000, 50000, 100000, 150000, 1000000]
+sizes = [5000, 50000, 100000, 150000, 1000000]
+trials = 5
 
-for N in dataSize:
-    SumRBS = SumIBS = SumSeqS = 0
+for size in sizes:
+    arr = sorted(random.sample(range(size * 10), size))
+    target = random.choice(arr)
 
-    for _ in range(10):  # 10 experimental runs
-        arr = sorted([random.randint(1, 1_000_000) for _ in range(N)])
-        target = random.randint(1, 1_000_000)
+    seq_times = [measure_time(sequential_search, arr, target) for _ in range(trials)]
+    iter_times = [measure_time(iterative_binary_search, arr, target) for _ in range(trials)]
+    rec_times = [measure_time(recursive_binary_search, arr, target, 0, len(arr)-1) for _ in range(trials)]
 
-        # Recursive Binary Search
-        start = time.perf_counter()
-        recursive_binary_search(arr, target, 0, len(arr) - 1)
-        SumRBS += (time.perf_counter() - start) * 1_000_000  # microseconds
-
-        # Iterative Binary Search
-        start = time.perf_counter()
-        iterative_binary_search(arr, target)
-        SumIBS += (time.perf_counter() - start) * 1_000_000
-
-        # Sequential Search
-        start = time.perf_counter()
-        sequential_search(arr, target)
-        SumSeqS += (time.perf_counter() - start) * 1_000_000
-
-    print(f"\nN = {N}")
-    print(f"Average Recursive Binary Search time: {SumRBS / 10:.2f} μs")
-    print(f"Average Iterative Binary Search time: {SumIBS / 10:.2f} μs")
-    print(f"Average Sequential Search time: {SumSeqS / 10:.2f} μs")
+    print(f"\nArray size: {size}")
+    print(f"Sequential avg: {sum(seq_times)/trials:.2f} µs")
+    print(f"Iterative Binary avg: {sum(iter_times)/trials:.2f} µs")
+    print(f"Recursive Binary avg: {sum(rec_times)/trials:.2f} µs")
